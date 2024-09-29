@@ -93,6 +93,19 @@ class Program
         }
     }
 
+    //Method to delete the 57th car
+    static void DeleteCar(MySqlConnection conn, int id)
+    {
+        string query = $"DELETE FROM Cars WHERE Id = '@id';";
+
+        using (MySqlCommand cmd = new MySqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@id", id);
+            Console.WriteLine(cmd.ExecuteNonQuery() > 0 ? "A query sikeres volt\n" : "A query sikertelen volt\n");
+        }
+
+    }
+
     static void Main()
     {
         string connectionString = "Server=localhost;Database=auto;Uid=root;Pwd=;";
@@ -110,6 +123,8 @@ class Program
                 AddNewCar(conn);
 
                 ModifyDate(conn, 23);
+
+                DeleteCar(conn, 57);
 
                 conn.Close();
             }
