@@ -61,17 +61,36 @@ class Program
 
         using (MySqlCommand cmd = new MySqlCommand(query, conn))
         {
-            Console.WriteLine(cmd.ExecuteNonQuery() > 0 ? "A query sikeres volt!\n" : "A query sikertelen volt!\n");
-            cmd.Parameters.AddWithValue("@id", id);
+            try
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@brand", brand);
+                cmd.Parameters.AddWithValue("@type", type);
+                cmd.Parameters.AddWithValue("@license", license);
+                cmd.Parameters.AddWithValue("@date", date);
+                Console.WriteLine(cmd.ExecuteNonQuery() > 0 ? "A query sikeres volt!\n" : "A query sikertelen volt!\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
         }
 
     }
 
     //Method to modify the 23th car manufacture date
-    static void ModifyDate(MySqlConnection conn)
+    static void ModifyDate(MySqlConnection conn, int id)
     {
-        string date = GetInput("Add meg az új gy");
+        string query = $"UPDATE Cars SET Date = '@date' WHERE id = @id";
+        string date = GetInput("Add meg az új gyártási dátumot (YYYY-MM--DD): ");
+
+        using (MySqlCommand cmd = new MySqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@date", date);
+            Console.WriteLine(cmd.ExecuteNonQuery() > 0 ? "A query sikeres volt\n" : "A query sikertelen volt\n");
+        }
     }
 
     static void Main()
@@ -89,7 +108,9 @@ class Program
                 GetBrands(conn);
 
                 AddNewCar(conn);
-                
+
+                ModifyDate(conn, 23);
+
                 conn.Close();
             }
             catch (Exception ex)
